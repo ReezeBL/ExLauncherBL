@@ -22,13 +22,14 @@ namespace ExLauncherBL
 
         public void Load(String username, String session, String uid)
         {
-            string javaLibPath = "-Djava.library.path =\"" + folder + "/bin/natives\"";
-            string extraArguments = config.Element("extra-arguments").Value.Replace("@RAM@", "512");
+            string javaLibPath = "-Djava.library.path=\"" + folder + "/bin/natives\"";
+            string extraArguments = config.Element("extra-arguments").Value.Replace("@RAM@", "512M");
             string arguments = config.Element("arguments").Value.Replace("@SESSION@", session).Replace("@USER@", username);
+            string mainClass = config.Element("main-class").Value;
             StringBuilder classPath = new StringBuilder();
-            Array.ForEach(config.Elements("path").ToArray(), e => classPath.AppendFormat("\"{0}/{1}\";", folder, e.Value));
-            File.WriteAllText("test.bat", String.Format("{0} {1} -cp {2} {3}", extraArguments, javaLibPath, classPath, arguments));
-            Process.Start("java.exe", String.Format("{0} {1} -cp {2} {3}", extraArguments, javaLibPath, classPath, arguments));
+            Array.ForEach(config.Element("class-path").Elements("path").ToArray(), e => classPath.AppendFormat("{0}/{1};", folder, e.Value));
+            File.WriteAllText("test.bat", String.Format("java {0} {1} -cp \"{2}\" {3} {4}\npause", extraArguments, javaLibPath, classPath, mainClass, arguments));
+            Process.Start("java.exe", String.Format("{0} {1} -cp \"{2}\" {3} {4}", extraArguments, javaLibPath, classPath, mainClass, arguments));
         }
     }
 }
