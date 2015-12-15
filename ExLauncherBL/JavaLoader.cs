@@ -15,6 +15,7 @@ namespace ExLauncherBL
         string folder;
         readonly string exjava = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"/exjava/jvm/bin/java.exe";
         readonly string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        readonly string myjava = Environment.CurrentDirectory + "/Java_64/bin/java.exe";
         public JavaLoader(XDocument config, string folder)
         {
             XElement root = config.Element("ex-servers");
