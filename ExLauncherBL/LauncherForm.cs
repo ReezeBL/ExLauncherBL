@@ -64,9 +64,17 @@ namespace ExLauncherBL
             return "user=" + Username + "&pass=" + Password + "&guid=" + GuID + "&key=";
         }
 
+        private static string GeneratePrameters(string username, string password)
+        {
+            password = password.Replace("+", "%2B").Replace("=", "%3D");
+            var guId = Encoding.UTF8.GetString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(username)));
+            return $"user={username}&pass={password}&guid={guId}&key=";
+        }
+
+
         private void connectButton_Click(object sender, EventArgs e)
         {
-            XDocument response = Connector.POSTurl(pathLoginServer, GeneratePrameters());
+            var response = Connector.POSTurl(pathLoginServer, GeneratePrameters());
             XElement authToken = response.Element("ex-auth");
             if (authToken.Element("error").Value == "true")
                 MessageBox.Show("Invalid login or password!");
@@ -77,6 +85,12 @@ namespace ExLauncherBL
                 XDocument config = Connector.GETurl(pathConfigInfo);
                 new JavaLoader(config, "hitech").Load(loginTextBox.Text, session, uuid);
             }
+        }
+
+        public static XDocument GetServerResponse(string username, string password)
+        {
+            XDocument response = Connector.POSTurl(pathLoginServer, GeneratePrameters(username, password));
+            return response;
         }
     }
 }
